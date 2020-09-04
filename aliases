@@ -1,0 +1,74 @@
+#!/bin/bash
+
+alias tosk="cd ~/saravankrish"
+alias togit="cd ~/hw/git"
+alias tocldr="cd ~/hw/git/cldr"
+alias gpr="git pull --rebase"
+alias gfa="git fetch --all --prune"
+alias ll='ls -lah'
+alias gg='git status -s'
+alias k='kubectl'
+alias kg='kubectl get'
+alias krm='kubectl delete'
+alias kd='kubectl describe' 
+alias ka='kubectl apply -f'
+alias ke='kubectl edit'
+alias kl='kubectl logs'
+alias kgp='kubectl get pod'
+alias krmp='kubectl delete pod'
+alias kdp='kubectl describe pod'
+alias kgd='kubectl get deployments'
+alias kdd='kubectl describe deployments'
+alias krmd='kubectl delete deployments'
+alias goc='gcloud compute'
+
+alias gerrit='ssh -p 29418 saravankrish@gerrit.eng.hortonworks.com gerrit'
+alias get_s3dev='ssh s3@cloudcat-s3.infra.cloudera.com build > ~/.aws/credentials'
+
+function gf {
+    git fetch $1 --prune	
+}
+
+function connect {
+	ssh -i /Users/skrishnamoorthy/.ssh/hw-re-keypair.pem root@$1
+}
+
+function awsconnect {
+	ssh -i /Users/skrishnamoorthy/.ssh/ec2-keypair.pem $1
+}
+
+function scopy {
+	scp -r -i /Users/skrishnamoorthy/hw/git/build-utils/openstack-utils/accounts/hw-re-keypair.pem $1 $2
+}
+
+function gert_clone {
+	git clone ssh://saravankrish@gerrit.eng.hortonworks.com:29418/$1 && scp -p -P 29418 saravankrish@gerrit.eng.hortonworks.com:hooks/commit-msg $1/.git/hooks/
+}
+
+function gpush {
+	git push origin HEAD:refs/for/$(git rev-parse --abbrev-ref HEAD)
+}
+
+function venv {
+    source /Users/skrishnamoorthy/hw/git/buildvenv/bin/activate
+}
+
+function install_relib {
+    pip install --pre "relib<$1" -i https://pypi.infra.cloudera.com/api/pypi/pypi-cloudera/simple --trusted-host pypi.infra.cloudera.com
+}
+
+export JAVA_HOME=$(/usr/libexec/java_home)
+export MVN_HOME=/Users/skrishnamoorthy/hw/tools/maven/apache-maven-3.5.4
+export PATH=$JAVA_HOME/bin:$MVN_HOME/bin:/Users/skrishnamoorthy/hw/homebrew/bin:/Users/skrishnamoorthy/hw/homebrew/Cellar/sphinx-doc/2.2.1/bin:$HOME/tools/terraform_v0.13.1:$PATH
+export ANSIBLE_HOSTS=${HOME}/hw/ansible/hosts
+export ANSIBLE_HOST_KEY_CHECKING=False
+export DOCKER_HOST=unix:///var/run/docker.sock
+export KUBECONFIG=${HOME}/.kube/config
+
+complete -C /Users/skrishnamoorthy/tools/terraform_v0.13.1/terraform terraform
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/skrishnamoorthy/Downloads/google-cloud-sdk/path.bash.inc' ]; then . '/Users/skrishnamoorthy/Downloads/google-cloud-sdk/path.bash.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/skrishnamoorthy/Downloads/google-cloud-sdk/completion.bash.inc' ]; then . '/Users/skrishnamoorthy/Downloads/google-cloud-sdk/completion.bash.inc'; fi
