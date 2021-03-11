@@ -41,8 +41,17 @@ function scopy {
 	scp -r -i /Users/skrishnamoorthy/hw/git/build-utils/openstack-utils/accounts/hw-re-keypair.pem $1 $2
 }
 
-function gert_clone {
+function gert_hwx_clone {
 	git clone ssh://saravankrish@gerrit.eng.hortonworks.com:29418/$1 && scp -p -P 29418 saravankrish@gerrit.eng.hortonworks.com:hooks/commit-msg $1/.git/hooks/
+}
+
+function gert_cldr_clone {
+    if [ $# -eq 2 ]
+    then
+	    git clone "ssh://skrishnamoorthy@gerrit.sjc.cloudera.com:29418/$1/$2" && scp -p -P 29418 skrishnamoorthy@gerrit.sjc.cloudera.com:hooks/commit-msg "$2/.git/hooks/"
+    else
+	    git clone "ssh://skrishnamoorthy@gerrit.sjc.cloudera.com:29418/$1" && scp -p -P 29418 skrishnamoorthy@gerrit.sjc.cloudera.com:hooks/commit-msg "$1/.git/hooks/"
+    fi
 }
 
 function gpush {
@@ -59,11 +68,13 @@ function install_relib {
 
 export JAVA_HOME=$(/usr/libexec/java_home)
 export MVN_HOME=/Users/skrishnamoorthy/hw/tools/maven/apache-maven-3.5.4
-export PATH=$JAVA_HOME/bin:$MVN_HOME/bin:/Users/skrishnamoorthy/hw/homebrew/bin:/Users/skrishnamoorthy/hw/homebrew/Cellar/sphinx-doc/2.2.1/bin:$HOME/tools/terraform_v0.13.1:$PATH
+export PATH=$JAVA_HOME/bin:$MVN_HOME/bin:/Users/skrishnamoorthy/hw/homebrew/bin:/Users/skrishnamoorthy/hw/homebrew/Cellar/sphinx-doc/2.2.1/bin:$HOME/tools/terraform:/Applications/MySQLWorkbench.app/Contents/MacOS:$PATH
 export ANSIBLE_HOSTS=${HOME}/hw/ansible/hosts
 export ANSIBLE_HOST_KEY_CHECKING=False
 export DOCKER_HOST=unix:///var/run/docker.sock
 export KUBECONFIG=${HOME}/.kube/config
+export gf="--grace-period=0 --force"
+export dr="--dry-run=client -o yaml"
 
 complete -C /Users/skrishnamoorthy/tools/terraform_v0.13.1/terraform terraform
 
