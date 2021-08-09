@@ -29,37 +29,8 @@ function gf {
     git fetch $1 --prune	
 }
 
-function connect {
-	ssh -i /Users/skrishnamoorthy/.ssh/hw-re-keypair.pem root@$1
-}
-
-function awsconnect {
-	ssh -i /Users/skrishnamoorthy/.ssh/ec2-keypair.pem $1
-}
-
-function scopy {
-	scp -r -i /Users/skrishnamoorthy/hw/git/build-utils/openstack-utils/accounts/hw-re-keypair.pem $1 $2
-}
-
-function gert_hwx_clone {
-	git clone ssh://saravankrish@gerrit.eng.hortonworks.com:29418/$1 && scp -p -P 29418 saravankrish@gerrit.eng.hortonworks.com:hooks/commit-msg $1/.git/hooks/
-}
-
-function gert_cldr_clone {
-    if [ $# -eq 2 ]
-    then
-	    git clone "ssh://skrishnamoorthy@gerrit.sjc.cloudera.com:29418/$1/$2" && scp -p -P 29418 skrishnamoorthy@gerrit.sjc.cloudera.com:hooks/commit-msg "$2/.git/hooks/"
-    else
-	    git clone "ssh://skrishnamoorthy@gerrit.sjc.cloudera.com:29418/$1" && scp -p -P 29418 skrishnamoorthy@gerrit.sjc.cloudera.com:hooks/commit-msg "$1/.git/hooks/"
-    fi
-}
-
-function gpush {
-	git push origin HEAD:refs/for/$(git rev-parse --abbrev-ref HEAD)
-}
-
 function venv {
-    source /Users/skrishnamoorthy/hw/git/buildvenv/bin/activate
+    source ${HOME}/git/buildvenv/bin/activate
 }
 
 function install_relib {
