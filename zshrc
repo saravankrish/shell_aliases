@@ -5,13 +5,22 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-export TERM="xterm-256color"
-
 # If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
+export PATH=$HOME/bin:/usr/local/bin:/opt/homebrew/bin:$PYENV_ROOT/bin:$PATH
+
+FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
+
+export PYENV_ROOT="$HOME/.pyenv"
+
+if command -v pyenv 1>/dev/null 2>&1; then
+    eval "$(pyenv init -)"
+    eval "$(pyenv virtualenv-init -)"
+fi
+
+pyenv activate venv310
 
 # Path to your oh-my-zsh installation.
-export ZSH="/Users/skrishnamoorthy/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -32,14 +41,18 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Case-sensitive completion must be off. _ and - will be interchangeable.
 # HYPHEN_INSENSITIVE="true"
 
-# Uncomment the following line to disable bi-weekly auto-update checks.
-# DISABLE_AUTO_UPDATE="true"
+# Uncomment one of the following lines to change the auto-update behavior
+# zstyle ':omz:update' mode disabled  # disable automatic updates
+# zstyle ':omz:update' mode auto      # update automatically without asking
+# zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 
-# Uncomment the following line to automatically update without prompting.
-# DISABLE_UPDATE_PROMPT="true"
+zstyle ':omz:plugins:alias-finder' autoload yes # disabled by default
+zstyle ':omz:plugins:alias-finder' longer yes # disabled by default
+zstyle ':omz:plugins:alias-finder' exact yes # disabled by default
+zstyle ':omz:plugins:alias-finder' cheaper yes # disabled by default
 
 # Uncomment the following line to change how often to auto-update (in days).
-# export UPDATE_ZSH_DAYS=13
+# zstyle ':omz:update' frequency 13
 
 # Uncomment the following line if pasting URLs and other text is messed up.
 # DISABLE_MAGIC_FUNCTIONS="true"
@@ -54,6 +67,9 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # ENABLE_CORRECTION="true"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
+# You can also set it to another string to have that shown instead of the default red dots.
+# e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
+# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
 # COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
@@ -77,7 +93,7 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(alias-finder brew common-aliases git github jira minikube kubectl helm kube-ps1 python pylint terraform zsh-syntax-highlighting zsh-autosuggestions)
+plugins=(alias-finder azure common-aliases fzf fzf-tab git history kubectl kubectl-autocomplete pip poetry pyenv python terraform zsh-syntax-highlighting zsh-autosuggestions)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -86,14 +102,14 @@ source $ZSH/oh-my-zsh.sh
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
-# export LANG=en_US.UTF-8
+export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
+if [[ -n $SSH_CONNECTION ]]; then
+  export EDITOR='vim'
+else
+  export EDITOR='vim'
+fi
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
@@ -106,55 +122,21 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+alias togit="cd $HOME/work/git"
 
-source ~/saravankrish/shell_aliases/aliases
-source ~/hw/git/buildvenv/bin/activate
-source ~/.bashrc_aws-okta
-
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
-
-## ### VISUAL CUSTOMISATION ###
-## 
-## # Elements options of left prompt (remove the @username context)
-## POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(dir rbenv vcs)
-## # Elements options of right prompt
-## POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status root_indicator background_jobs history time)
-## 
-## 
-## 
-## # Add a second prompt line for the command
-## POWERLEVEL9K_PROMPT_ON_NEWLINE=true
-## 
-## # Add a space in the first prompt
-## POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX="%f"
-## 
-## # Visual customisation of the second prompt line
-## local user_symbol="$"
-## if [[ $(print -P "%#") =~ "#" ]]; then
-##     user_symbol = "#"
-## fi
-## POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX="%{%B%F{black}%K{yellow}%} $user_symbol%{%b%f%k%F{yellow}%} %{%f%}"
-## 
-## 
-## # Change the git status to red when something isn't committed and pushed
-## POWERLEVEL9K_VCS_MODIFIED_BACKGROUND='red'
-## 
-## # Add a new line after the global prompt
-## POWERLEVEL9K_PROMPT_ADD_NEWLINE=true
-
-
-# Colorise the top Tabs of Iterm2 with the same color as background
-# Just change the 18/26/33 wich are the rgb values
-echo -e "\033]6;1;bg;red;brightness;18\a"
-echo -e "\033]6;1;bg;green;brightness;26\a"
-echo -e "\033]6;1;bg;blue;brightness;33\a"
-source <(kubectl completion zsh)
-complete -F __start_kubectl k
-
-# >>>> Vagrant command completion (start)
-fpath=(/opt/vagrant/embedded/gems/2.2.10/gems/vagrant-2.2.10/contrib/zsh $fpath)
-compinit
-# <<<<  Vagrant command completion (end)
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# To auto complete az cli commands
+autoload bashcompinit && bashcompinit
+source $(brew --prefix)/etc/bash_completion.d/az
+
+# export HTTP_PROXY=http://naproxy.gm.com:8080
+# export HTTPS_PROXY=http://naproxy.gm.com:8080
+autoload -U compinit; compinit
+
+export TF_LOG="INFO"
+export TF_LOG_PATH="$HOME/.terraform.d/logs/terraform.log"
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
